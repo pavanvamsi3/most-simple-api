@@ -1,22 +1,17 @@
-# Most Simple API
+# Most Simple API - Books Service
 
-A lightweight, minimalist API built with FastAPI for testing and demonstration purposes.
+A lightweight, minimalist Books API built with FastAPI for testing and demonstration purposes.
 
 ## Overview
 
-This project provides a simple API with basic endpoints that can be used for:
-- Testing API integrations
-- Learning FastAPI framework
-- Demonstrating HTTP methods (GET, POST, PUT, DELETE)
-- Quick prototyping
+This project provides a simple RESTful API for managing a collection of books with basic CRUD operations. The API is built using FastAPI and stores data in-memory.
 
 ## Features
 
-- Basic CRUD operations
-- Health check endpoint
-- Simple authentication example
-- Logging functionality
-- Configurable port via environment variables
+- Create, read, update, and delete books
+- Input validation using Pydantic models
+- Error handling with appropriate HTTP status codes
+- Lightweight in-memory storage
 
 ## Installation
 
@@ -35,7 +30,7 @@ This project provides a simple API with basic endpoints that can be used for:
 
 2. Install dependencies:
    ```bash
-   pip install fastapi uvicorn
+   pip install fastapi uvicorn pydantic
    ```
 
 ## Usage
@@ -45,76 +40,113 @@ This project provides a simple API with basic endpoints that can be used for:
 Run the API server with:
 
 ```bash
-python main.py
+uvicorn main:app --reload
 ```
 
-By default, the server will run on port 8000. You can modify the port by setting the `PORT` environment variable.
+By default, the server will run on `http://127.0.0.1:8000`.
 
 ### Endpoints
 
-The API provides the following endpoints:
+The API provides the following endpoints for book management:
 
-- `GET /` - Returns a welcome message
-- `GET /health` - Health check endpoint
-- `GET /items/{item_id}` - Retrieve an item by ID
-- `POST /items/` - Create a new item
-- `PUT /items/{item_id}` - Update an existing item
-- `DELETE /items/{item_id}` - Delete an item
+- `POST /books/{book_id}` - Create a new book
+- `GET /books/{book_id}` - Retrieve a book by ID
+- `PATCH /books/{book_id}` - Update an existing book
+- `DELETE /books/{book_id}` - Delete a book
+
+### Data Model
+
+Each book contains the following fields:
+
+- `title`: String (required)
+- `author`: String (required)
+- `description`: String (optional)
 
 ### Example Requests
 
-#### Get Welcome Message
+#### Create a Book
 ```bash
-curl http://localhost:8000/
+curl -X POST -H "Content-Type: application/json" \
+  -d '{"title": "The Great Gatsby", "author": "F. Scott Fitzgerald", "description": "A novel about the American Dream"}' \
+  http://localhost:8000/books/1
 ```
 
 Response:
 ```json
-{"message": "Welcome to the Most Simple API"}
+{
+  "msg": "Book created",
+  "book": {
+    "title": "The Great Gatsby",
+    "author": "F. Scott Fitzgerald",
+    "description": "A novel about the American Dream"
+  }
+}
 ```
 
-#### Health Check
+#### Get a Book
 ```bash
-curl http://localhost:8000/health
+curl http://localhost:8000/books/1
 ```
 
 Response:
 ```json
-{"status": "healthy"}
+{
+  "title": "The Great Gatsby",
+  "author": "F. Scott Fitzgerald",
+  "description": "A novel about the American Dream"
+}
 ```
 
-#### Get an Item
+#### Update a Book
 ```bash
-curl http://localhost:8000/items/1
+curl -X PATCH -H "Content-Type: application/json" \
+  -d '{"description": "A classic novel exploring the American Dream in the 1920s"}' \
+  http://localhost:8000/books/1
 ```
 
 Response:
 ```json
-{"item_id": 1, "name": "Example Item", "description": "This is an example item"}
+{
+  "msg": "Book updated",
+  "book": {
+    "title": "The Great Gatsby",
+    "author": "F. Scott Fitzgerald",
+    "description": "A classic novel exploring the American Dream in the 1920s"
+  }
+}
 ```
 
-#### Create an Item
+#### Delete a Book
 ```bash
-curl -X POST -H "Content-Type: application/json" -d '{"name": "New Item", "description": "A brand new item"}' http://localhost:8000/items/
+curl -X DELETE http://localhost:8000/books/1
 ```
 
 Response:
 ```json
-{"item_id": 2, "name": "New Item", "description": "A brand new item"}
+{
+  "msg": "Book deleted",
+  "book": {
+    "title": "The Great Gatsby",
+    "author": "F. Scott Fitzgerald",
+    "description": "A classic novel exploring the American Dream in the 1920s"
+  }
+}
 ```
 
-## Configuration
+## API Documentation
 
-You can configure the following settings:
+FastAPI automatically generates interactive API documentation. After starting the server, you can access:
 
-- **PORT**: The port number for the server (default: 8000)
-  ```bash
-  PORT=9000 python main.py
-  ```
+- Swagger UI: http://127.0.0.1:8000/docs
+- ReDoc: http://127.0.0.1:8000/redoc
 
-## Logging
+## Implementation Details
 
-The API logs all requests to the console with timestamp, HTTP method, and endpoint information.
+The API uses:
+- In-memory dictionary to store books
+- Pydantic models for data validation
+- FastAPI for routing and HTTP handling
+- HTTP exceptions for error handling
 
 ## Development
 
@@ -126,9 +158,11 @@ most-simple-api/
 ├── README.md        # Project documentation
 ```
 
-### Extending the API
+### Error Handling
 
-To add new endpoints, modify the `main.py` file following the existing patterns.
+The API returns appropriate HTTP status codes:
+- 400: Bad Request (when trying to create a book with an ID that already exists)
+- 404: Not Found (when trying to access, update, or delete a non-existent book)
 
 ## License
 
