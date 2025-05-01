@@ -4,37 +4,38 @@ from typing import Dict
 
 app = FastAPI()
 
-# In-memory "database"
-db: Dict[int, dict] = {}
+# In-memory "database" of books
+books_db: Dict[int, dict] = {}
 
-# Pydantic model for request/response
-class Item(BaseModel):
-    name: str
+# Pydantic model for a book
+class Book(BaseModel):
+    title: str
+    author: str
     description: str = None
 
-@app.post("/items/{item_id}")
-def create_item(item_id: int, item: Item):
-    if item_id in db:
-        raise HTTPException(status_code=400, detail="Item already exists")
-    db[item_id] = item.dict()
-    return {"msg": "Item created", "item": db[item_id]}
+@app.post("/books/{book_id}")
+def create_book(book_id: int, book: Book):
+    if book_id in books_db:
+        raise HTTPException(status_code=400, detail="Book already exists")
+    books_db[book_id] = book.dict()
+    return {"msg": "Book created", "book": books_db[book_id]}
 
-@app.get("/items/{item_id}")
-def get_item(item_id: int):
-    if item_id not in db:
-        raise HTTPException(status_code=404, detail="Item not found")
-    return db[item_id]
+@app.get("/books/{book_id}")
+def get_book(book_id: int):
+    if book_id not in books_db:
+        raise HTTPException(status_code=404, detail="Book not found")
+    return books_db[book_id]
 
-@app.patch("/items/{item_id}")
-def update_item(item_id: int, item: Item):
-    if item_id not in db:
-        raise HTTPException(status_code=404, detail="Item not found")
-    db[item_id].update(item.dict(exclude_unset=True))
-    return {"msg": "Item updated", "item": db[item_id]}
+@app.patch("/books/{book_id}")
+def update_book(book_id: int, book: Book):
+    if book_id not in books_db:
+        raise HTTPException(status_code=404, detail="Book not found")
+    books_db[book_id].update(book.dict(exclude_unset=True))
+    return {"msg": "Book updated", "book": books_db[book_id]}
 
-@app.delete("/items/{item_id}")
-def delete_item(item_id: int):
-    if item_id not in db:
-        raise HTTPException(status_code=404, detail="Item not found")
-    deleted = db.pop(item_id)
-    return {"msg": "Item deleted", "item": deleted}
+@app.delete("/books/{book_id}")
+def delete_book(book_id: int):
+    if book_id not in books_db:
+        raise HTTPException(status_code=404, detail="Book not found")
+    deleted = books_db.pop(book_id)
+    return {"msg": "Book deleted", "book": deleted}
