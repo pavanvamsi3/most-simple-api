@@ -30,7 +30,7 @@ This project provides a simple RESTful API for managing a collection of books wi
 
 2. Install dependencies:
    ```bash
-   pip install fastapi uvicorn pydantic
+   pip install -r requirements.txt
    ```
 
 ## Usage
