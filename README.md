@@ -175,3 +175,5 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## Contact
 
 For questions or support, please open an issue on the GitHub repository.
+
+### 100% vibe coded by ChatGPT ✨
