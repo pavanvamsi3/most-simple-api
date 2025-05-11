@@ -30,6 +30,8 @@ This project provides a simple RESTful API for managing a collection of books wi
 
 2. Install dependencies:
    ```bash
+   python -m venv venv
+   source venv/bin/activate
    pip install -r requirements.txt
    ```
 
